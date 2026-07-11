@@ -1,0 +1,28 @@
+name: 自动部署到阿里云
+
+on:
+  push:
+    branches: [ main ]  # 推送到main分支时触发
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, docker]  # 使用你的Docker Runner
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+        
+      - name: 安装依赖
+        run: |
+          source ~/.bashrc
+          npm install
+        
+      - name: 构建站点
+        run: |
+          source ~/.bashrc
+          npm run docs:build  # VitePress构建命令
+        
+      - name: 复制到Nginx目录
+        run: |
+          sudo cp -r docs/.vitepress/dist/* /www/wwwroot/myblog/
+          sudo /www/server/nginx/sbin/nginx -s reload
