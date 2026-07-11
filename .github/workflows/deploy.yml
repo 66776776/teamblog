@@ -25,7 +25,13 @@ jobs:
         run: |
           npm run docs:build
           
-      - name: 复制到 Nginx 目录
+      - name: 复制文件到网站目录
         run: |
           cp -r docs/.vitepress/dist/* /www/wwwroot/myblog/
+          
+      - name: 安装依赖库并重载 Nginx
+        run: |
+          # 安装缺失的库
+          apt-get update && apt-get install -y libjemalloc2 2>/dev/null || true
+          # 重载 Nginx
           /www/server/nginx/sbin/nginx -s reload
