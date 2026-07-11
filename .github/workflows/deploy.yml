@@ -2,27 +2,30 @@ name: 自动部署到阿里云
 
 on:
   push:
-    branches: [ main ]  # 推送到main分支时触发
+    branches: [ main ]
 
 jobs:
   deploy:
-    runs-on: [self-hosted, docker]  # 使用你的Docker Runner
+    runs-on: [self-hosted, docker]
     
     steps:
       - name: 检出代码
         uses: actions/checkout@v3
         
+      - name: 安装 Node.js
+        uses: actions/setup-node@v3  # 使用 GitHub Actions 官方 Node.js 安装 action
+        with:
+          node-version: '18'  # 或 '20'，根据你的项目需求
+          
       - name: 安装依赖
         run: |
-          source ~/.bashrc
           npm install
-        
+          
       - name: 构建站点
         run: |
-          source ~/.bashrc
-          npm run docs:build  # VitePress构建命令
-        
-      - name: 复制到Nginx目录
+          npm run docs:build
+          
+      - name: 复制到 Nginx 目录
         run: |
-          sudo cp -r docs/.vitepress/dist/* /www/wwwroot/myblog/
-          sudo /www/server/nginx/sbin/nginx -s reload
+          cp -r docs/.vitepress/dist/* /www/wwwroot/myblog/
+          /www/server/nginx/sbin/nginx -s reload
