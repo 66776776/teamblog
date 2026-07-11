@@ -28,12 +28,3 @@ jobs:
       - name: 复制文件到网站目录
         run: |
           cp -r docs/.vitepress/dist/* /www/wwwroot/myblog/
-          
-      - name: 通过 Docker 命令重载宿主机 Nginx
-        run: |
-          # 使用宿主机的 Docker 执行 nginx 重载
-          docker exec $(docker ps -q --filter "name=baota" 2>/dev/null | head -1) \
-            /www/server/nginx/sbin/nginx -s reload 2>/dev/null || \
-          docker exec $(docker ps -q --filter "name=nginx" 2>/dev/null | head -1) \
-            nginx -s reload 2>/dev/null || \
-          echo "Nginx 重载将在下次访问时自动生效"
